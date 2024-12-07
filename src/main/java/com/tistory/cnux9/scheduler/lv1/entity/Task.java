@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class Task {
     private Long id;
     private String content;
-    private String userName;
+    private String name;
     private String password;
     @Setter
     private LocalDateTime createdDateTime;
@@ -21,7 +21,7 @@ public class Task {
 
     public Task(TaskRequestDto dto) {
         this.content = dto.getContent();
-        this.userName = dto.getUserName();
+        this.name = dto.getName();
         this.password = dto.getPassword();
     }
 }

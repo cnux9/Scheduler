@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class JdbcTemplateTaskRepository implements TaskRepository{
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("content", task.getContent());
-        parameters.put("user_name", task.getUserName());
+        parameters.put("user_name", task.getName());
         parameters.put("password", task.getPassword());
         parameters.put("created_date_time", task.getCreatedDateTime());
         parameters.put("updated_date_time", task.getUpdatedDateTime());
@@ -42,7 +43,7 @@ public class JdbcTemplateTaskRepository implements TaskRepository{
         return new TaskResponseDto(
                 key.longValue(),
                 task.getContent(),
-                task.getUserName(),
+                task.getName(),
                 task.getCreatedDateTime(),
                 task.getUpdatedDateTime()
         );
@@ -50,8 +51,31 @@ public class JdbcTemplateTaskRepository implements TaskRepository{
 
     @Override
     public TaskResponseDto findTaskById(Long id) {
-        List<TaskResponseDto> result = jdbcTemplate.query("SELECT * FROM tasks WHERE id = ?", taskRowMapper(), id);
+        List<TaskResponseDto> result = jdbcTemplate.query("SELECT * FROM tasks WHERE id = ?;", taskRowMapper(), id);
         return result.stream().findAny().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Does not exist id = " + id));
+    }
+
+    @Override
+    public List<TaskResponseDto> findAllTasks() {
+        return jdbcTemplate.query("SELECT * FROM tasks;", taskRowMapper());
+    }
+
+    @Override
+    public List<TaskResponseDto> findTasksByName(String name) {
+        String query = "SELECT * FROM tasks WHERE user_name = ?;";
+        return jdbcTemplate.query(query, taskRowMapper(), name);
+    }
+
+    @Override
+    public List<TaskResponseDto> findTasksByDate(LocalDate date) {
+        String query = "SELECT * FROM tasks WHERE DATE(updated_date_time) = ? ORDER BY updated_date_time DESC;";
+        return jdbcTemplate.query(query, taskRowMapper(), date);
+    }
+
+    @Override
+    public List<TaskResponseDto> findTasksByNameAndDate(String name, LocalDate date) {
+        String query = "SELECT * FROM tasks WHERE user_name = ? AND DATE(updated_date_time) = ? ORDER BY updated_date_time DESC;";
+        return jdbcTemplate.query(query, taskRowMapper(), name, date);
     }
 
     private RowMapper<TaskResponseDto> taskRowMapper() {
@@ -68,5 +92,4 @@ public class JdbcTemplateTaskRepository implements TaskRepository{
             }
         };
     }
-
 }

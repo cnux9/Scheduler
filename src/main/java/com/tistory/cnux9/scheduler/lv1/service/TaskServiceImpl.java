@@ -6,7 +6,9 @@ import com.tistory.cnux9.scheduler.lv1.entity.Task;
 import com.tistory.cnux9.scheduler.lv1.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -32,5 +34,25 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponseDto findTaskById(Long id) {
         return taskRepository.findTaskById(id);
+    }
+
+    @Override
+    public List<TaskResponseDto> findAllTasks() {
+        return taskRepository.findAllTasks();
+    }
+
+    @Override
+    public List<TaskResponseDto> findTasksByName(String name) {
+        return taskRepository.findTasksByName(name);
+    }
+
+    @Override
+    public List<TaskResponseDto> findTasksByDate(LocalDate date) {
+        return taskRepository.findTasksByDate(date);
+    }
+
+    @Override
+    public List<TaskResponseDto> findTasksByNameAndDate(String name, LocalDate date) {
+        return taskRepository.findTasksByNameAndDate(name, date);
     }
 }
