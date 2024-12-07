@@ -25,8 +25,8 @@ public class TaskController {
 
     // 단건 조회
     @GetMapping("/{id}")
-    public void findTaskById(@PathVariable Long id) {
-        return;
+    public ResponseEntity<TaskResponseDto> findTaskById(@PathVariable Long id) {
+        return new ResponseEntity<>(taskService.findTaskById(id), HttpStatus.OK);
     }
 
     // 다건 조회d

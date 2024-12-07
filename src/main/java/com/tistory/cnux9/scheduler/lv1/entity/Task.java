@@ -21,7 +21,7 @@ public class Task {
 
     public Task(TaskRequestDto dto) {
         this.content = dto.getContent();
-        this.userName = dto.getName();
+        this.userName = dto.getUserName();
         this.password = dto.getPassword();
     }
 }

@@ -2,13 +2,19 @@ package com.tistory.cnux9.scheduler.lv1.repository;
 
 import com.tistory.cnux9.scheduler.lv1.dto.TaskResponseDto;
 import com.tistory.cnux9.scheduler.lv1.entity.Task;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -44,7 +50,23 @@ public class JdbcTemplateTaskRepository implements TaskRepository{
 
     @Override
     public TaskResponseDto findTaskById(Long id) {
-        return null;
+        List<TaskResponseDto> result = jdbcTemplate.query("SELECT * FROM tasks WHERE id = ?", taskRowMapper(), id);
+        return result.stream().findAny().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Does not exist id = " + id));
+    }
+
+    private RowMapper<TaskResponseDto> taskRowMapper() {
+        return new RowMapper<TaskResponseDto>() {
+            @Override
+            public TaskResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return new TaskResponseDto(
+                        rs.getLong("id"),
+                        rs.getString("content"),
+                        rs.getString("user_name"),
+                        rs.getTimestamp("created_date_time").toLocalDateTime(),
+                        rs.getTimestamp("updated_date_time").toLocalDateTime()
+                );
+            }
+        };
     }
 
 }

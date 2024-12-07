@@ -6,6 +6,6 @@ import lombok.Getter;
 public class TaskRequestDto {
     // id와 updatedDateTime은 생성 예정
     private String content;
-    private String name;
+    private String userName;
     private String password;
 }
