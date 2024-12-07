@@ -1,5 +1,6 @@
 package com.tistory.cnux9.scheduler.lv1.repository;
 
+import com.tistory.cnux9.scheduler.lv1.dto.TaskRequestDto;
 import com.tistory.cnux9.scheduler.lv1.dto.TaskResponseDto;
 import com.tistory.cnux9.scheduler.lv1.entity.Task;
 import org.springframework.http.HttpStatus;
@@ -50,35 +51,49 @@ public class JdbcTemplateTaskRepository implements TaskRepository{
     }
 
     @Override
-    public TaskResponseDto findTaskById(Long id) {
-        List<TaskResponseDto> result = jdbcTemplate.query("SELECT * FROM tasks WHERE id = ?;", taskRowMapper(), id);
+    public Task findTaskById(Long id) {
+        List<Task> result = jdbcTemplate.query("SELECT * FROM tasks WHERE id = ?;", taskRowMapper(), id);
         return result.stream().findAny().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Does not exist id = " + id));
     }
 
     @Override
     public List<TaskResponseDto> findAllTasks() {
-        return jdbcTemplate.query("SELECT * FROM tasks;", taskRowMapper());
+        return jdbcTemplate.query("SELECT * FROM tasks;", taskResponseDtoRowMapper());
     }
 
     @Override
     public List<TaskResponseDto> findTasksByName(String name) {
         String query = "SELECT * FROM tasks WHERE user_name = ?;";
-        return jdbcTemplate.query(query, taskRowMapper(), name);
+        return jdbcTemplate.query(query, taskResponseDtoRowMapper(), name);
     }
 
     @Override
     public List<TaskResponseDto> findTasksByDate(LocalDate date) {
         String query = "SELECT * FROM tasks WHERE DATE(updated_date_time) = ? ORDER BY updated_date_time DESC;";
-        return jdbcTemplate.query(query, taskRowMapper(), date);
+        return jdbcTemplate.query(query, taskResponseDtoRowMapper(), date);
     }
 
     @Override
     public List<TaskResponseDto> findTasksByNameAndDate(String name, LocalDate date) {
         String query = "SELECT * FROM tasks WHERE user_name = ? AND DATE(updated_date_time) = ? ORDER BY updated_date_time DESC;";
-        return jdbcTemplate.query(query, taskRowMapper(), name, date);
+        return jdbcTemplate.query(query, taskResponseDtoRowMapper(), name, date);
     }
 
-    private RowMapper<TaskResponseDto> taskRowMapper() {
+    @Override
+    public int updateTask(Long id, Task task) {
+        String query = "UPDATE tasks SET content = ?, user_name = ?, updated_date_time = ? WHERE id = ?;";
+        int updatedRowNum = jdbcTemplate.update(query, task.getContent(), task.getName(), task.getUpdatedDateTime(), id);
+
+        return updatedRowNum;
+    }
+
+    @Override
+    public String getPasswordById(Long id) {
+        String query = "SELECT password FROM tasks WHERE id = ?;;";
+        return jdbcTemplate.queryForObject(query, String.class, id);
+    }
+
+    private RowMapper<TaskResponseDto> taskResponseDtoRowMapper() {
         return new RowMapper<TaskResponseDto>() {
             @Override
             public TaskResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -86,6 +101,22 @@ public class JdbcTemplateTaskRepository implements TaskRepository{
                         rs.getLong("id"),
                         rs.getString("content"),
                         rs.getString("user_name"),
+                        rs.getTimestamp("created_date_time").toLocalDateTime(),
+                        rs.getTimestamp("updated_date_time").toLocalDateTime()
+                );
+            }
+        };
+    }
+
+    private RowMapper<Task> taskRowMapper() {
+        return new RowMapper<Task>() {
+            @Override
+            public Task mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return new Task(
+                        rs.getLong("id"),
+                        rs.getString("content"),
+                        rs.getString("user_name"),
+                        rs.getString("password"),
                         rs.getTimestamp("created_date_time").toLocalDateTime(),
                         rs.getTimestamp("updated_date_time").toLocalDateTime()
                 );

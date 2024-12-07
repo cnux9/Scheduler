@@ -54,4 +54,12 @@ public class TaskController {
         }
         return new ResponseEntity<>(taskList, HttpStatus.OK);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TaskResponseDto> updateTask(
+            @PathVariable Long id,
+            @RequestBody TaskRequestDto dto
+    ) {
+        return new ResponseEntity<>(taskService.updateTask(id, dto), HttpStatus.OK);
+    }
 }

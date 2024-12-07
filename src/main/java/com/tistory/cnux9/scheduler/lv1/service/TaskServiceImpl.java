@@ -4,7 +4,10 @@ import com.tistory.cnux9.scheduler.lv1.dto.TaskRequestDto;
 import com.tistory.cnux9.scheduler.lv1.dto.TaskResponseDto;
 import com.tistory.cnux9.scheduler.lv1.entity.Task;
 import com.tistory.cnux9.scheduler.lv1.repository.TaskRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,7 +36,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskResponseDto findTaskById(Long id) {
-        return taskRepository.findTaskById(id);
+        return new TaskResponseDto(taskRepository.findTaskById(id));
     }
 
     @Override
@@ -54,5 +57,17 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<TaskResponseDto> findTasksByNameAndDate(String name, LocalDate date) {
         return taskRepository.findTasksByNameAndDate(name, date);
+    }
+
+    @Transactional
+    @Override
+    public TaskResponseDto updateTask(Long id, TaskRequestDto dto) {
+        Task task = taskRepository.findTaskById(id);
+        if (!dto.getPassword().equals(task.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Your password is wrong.");
+        }
+        task.setUpdatedDateTime(LocalDateTime.now());
+        int updatedRowNum = taskRepository.updateTask(id, task);
+        return new TaskResponseDto(taskRepository.findTaskById(id));
     }
 }

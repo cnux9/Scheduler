@@ -18,4 +18,6 @@ public interface TaskService {
     List<TaskResponseDto> findTasksByDate(LocalDate date);
 
     List<TaskResponseDto> findTasksByNameAndDate(String name, LocalDate date);
+
+    TaskResponseDto updateTask(Long id, TaskRequestDto dto);
 }
