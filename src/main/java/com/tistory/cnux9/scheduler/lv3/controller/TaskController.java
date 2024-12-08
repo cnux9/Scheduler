@@ -55,6 +55,7 @@ public class TaskController {
         return new ResponseEntity<>(taskList, HttpStatus.OK);
     }
 
+    // 단건 전체 수정
     @PutMapping("/{taskId}")
     public ResponseEntity<TaskResponseDto> updateTask(
             @PathVariable Long taskId,
@@ -63,7 +64,7 @@ public class TaskController {
         return new ResponseEntity<>(taskService.updateTask(taskId, dto), HttpStatus.OK);
     }
 
-    // 원래 DELETE 메소드 요청에는 바디가 없지만 비밀번호를 http 메시지 바디로 보내는 특이 케이스
+    // 원래 DELETE 메소드 요청에는 바디가 없지만 인증/인가를 아직 못배워서 비밀번호 바디에 전달
     @DeleteMapping("/{taskId}")
     public ResponseEntity<Void> updateTask(
             @PathVariable Long taskId,
