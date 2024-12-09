@@ -3,6 +3,7 @@ package com.tistory.cnux9.scheduler.lv4.repository;
 import com.tistory.cnux9.scheduler.lv4.dto.TaskResponseDto;
 import com.tistory.cnux9.scheduler.lv4.entity.Task;
 import com.tistory.cnux9.scheduler.lv4.resource.ResourceNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @Repository
 public class JdbcTemplateTaskRepository implements TaskRepository {
     private final String SELECT_PREFIX = "SELECT * FROM tasks AS t INNER JOIN users AS u ON t.user_id = u.user_id";
@@ -55,15 +57,14 @@ public class JdbcTemplateTaskRepository implements TaskRepository {
     // 확장 편이성이 높은 다건 조건 검색
     @Override
     public List<TaskResponseDto> findTasks(MultiValueMap<String, Object> conditions) {
-        Object[] args = new Object[conditions.size()];
-        String whereClause = "";
         if (!conditions.isEmpty()) {
             String[] clauses = new String[conditions.size()];
-
+            Object[] args = new Object[conditions.size()];
             int clausesIndex = 0;
             int argsIndex = 0;
             for (String key : conditions.keySet()) {
                 for (Object value : conditions.get(key)) {
+                    log.info(key + ": " + value);
                     clauses[clausesIndex++] = switch (key) {
                         case "email" -> "u.email = ?";
                         case "date" -> "DATE(t.updated_date_time) = ?";
@@ -72,10 +73,12 @@ public class JdbcTemplateTaskRepository implements TaskRepository {
                     args[argsIndex++] = value;
                 }
             }
-            whereClause = " WHERE " + String.join(" AND ", clauses);
+            String whereClause = " WHERE " + String.join(" AND ", clauses);
+            String query = SELECT_PREFIX + whereClause + ORDER_BY_SUFFIX;
+            return jdbcTemplate.query(query, taskResponseDtoRowMapper(), args);
         }
-        String query = SELECT_PREFIX + whereClause + ORDER_BY_SUFFIX;
-        return jdbcTemplate.query(query, taskResponseDtoRowMapper(), args);
+        String query = SELECT_PREFIX + ORDER_BY_SUFFIX;
+        return jdbcTemplate.query(query, taskResponseDtoRowMapper());
     }
 
     @Override

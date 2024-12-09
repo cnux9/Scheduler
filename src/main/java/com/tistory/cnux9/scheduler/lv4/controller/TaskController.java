@@ -2,8 +2,8 @@ package com.tistory.cnux9.scheduler.lv4.controller;
 
 import com.tistory.cnux9.scheduler.lv4.dto.TaskRequestDto;
 import com.tistory.cnux9.scheduler.lv4.dto.TaskResponseDto;
-import com.tistory.cnux9.scheduler.lv4.dto.TaskSearchDto;
 import com.tistory.cnux9.scheduler.lv4.service.TaskService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
@@ -35,7 +35,7 @@ public class TaskController {
 
     // 다건 조회
     @GetMapping
-    public ResponseEntity<List<TaskResponseDto>> findFilteredTasks(@RequestBody MultiValueMap<String, Object> conditions) {
+    public ResponseEntity<List<TaskResponseDto>> findTasks(@RequestParam(required = false) MultiValueMap<String, Object> conditions) {
         return ResponseEntity.ok(taskService.findTasks(conditions));
     }
 
@@ -51,7 +51,7 @@ public class TaskController {
     @DeleteMapping("/{taskId}")
     public ResponseEntity<Void> deleteTask(
             @PathVariable Long taskId,
-            @RequestBody String password
+            @RequestParam String password
     ) {
         taskService.deleteTask(taskId, password);
         return ResponseEntity.ok().build();

@@ -2,7 +2,6 @@ package com.tistory.cnux9.scheduler.lv4.service;
 
 import com.tistory.cnux9.scheduler.lv4.dto.TaskRequestDto;
 import com.tistory.cnux9.scheduler.lv4.dto.TaskResponseDto;
-import com.tistory.cnux9.scheduler.lv4.dto.TaskSearchDto;
 import com.tistory.cnux9.scheduler.lv4.entity.Task;
 import com.tistory.cnux9.scheduler.lv4.repository.TaskRepository;
 import com.tistory.cnux9.scheduler.lv4.resource.ResourceNotFoundException;
@@ -12,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
