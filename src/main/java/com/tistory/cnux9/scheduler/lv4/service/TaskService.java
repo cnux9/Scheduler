@@ -11,7 +11,7 @@ public interface TaskService {
 
     TaskResponseDto findTaskById(Long taskId);
 
-    List<TaskResponseDto> findTasks(MultiValueMap<String, Object> conditions);
+    List<TaskResponseDto> findTasks(MultiValueMap<String, String> conditions);
 
     TaskResponseDto updateTask(Long taskId, TaskRequestDto dto);
 

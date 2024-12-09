@@ -4,6 +4,7 @@ import com.tistory.cnux9.scheduler.lv4.dto.TaskResponseDto;
 import com.tistory.cnux9.scheduler.lv4.entity.Task;
 import com.tistory.cnux9.scheduler.lv4.resource.ResourceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.*;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -14,17 +15,15 @@ import org.springframework.util.MultiValueMap;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
 public class JdbcTemplateTaskRepository implements TaskRepository {
-    private final String SELECT_PREFIX = "SELECT * FROM tasks AS t INNER JOIN users AS u ON t.user_id = u.user_id";
-    private final String ORDER_BY_SUFFIX = " ORDER BY t.updated_date_time DESC;";
+    private final String SELECT_CLAUSE = "SELECT * FROM tasks AS t INNER JOIN users AS u ON t.user_id = u.user_id";
+    private final String ORDER_BY_CLAUSE = " ORDER BY t.updated_date_time DESC";
+
     private final JdbcTemplate jdbcTemplate;
 
     public JdbcTemplateTaskRepository(DataSource dataSource) {
@@ -50,41 +49,54 @@ public class JdbcTemplateTaskRepository implements TaskRepository {
 
     @Override
     public Optional<Task> findTaskById(Long taskId) {
-        List<Task> result = jdbcTemplate.query(SELECT_PREFIX + " WHERE t.task_id = ?;", taskRowMapper(), taskId);
+        List<Task> result = jdbcTemplate.query(SELECT_CLAUSE + " WHERE t.task_id = ?;", taskRowMapper(), taskId);
         return result.stream().findAny();
     }
 
-    // 확장 편이성이 높은 다건 조건 검색
+/**
+ * 확장 편이성이 높은 다건 조건 검색<br>
+ * 동일 속성에 여러가지 조건이 있으면 Separator = OR 로 join한 후에<br>
+ * 다른 속성 끼리는 Separator = AND 로 join
+ */
     @Override
-    public List<TaskResponseDto> findTasks(MultiValueMap<String, Object> conditionsMap) {
-        log.info("JdbcTemplateTaskRepository.findTasks() is called.");
+    public Slice<TaskResponseDto> findTasks(Pageable pageable, MultiValueMap<String, String> conditionsMap) {
+        StringBuilder sb = new StringBuilder(SELECT_CLAUSE);
         if (!conditionsMap.isEmpty()) {
-            int length = conditionsMap.size();
-            String[] conditions = new String[length];
-            Object[] args = new Object[conditionsMap.values().stream().mapToInt(List::size).sum()];
-            int keyIndex = 0;
-            int argsIndex = 0;
-            for (String key : conditionsMap.keySet()) {
-                List<Object> values = conditionsMap.get(key);
-                String[] orJoin = new String[values.size()];
-                int orIndex = 0;
-                for (Object value : values) {
-                    log.info(key + ": " + value);
-                    orJoin[orIndex++] = switch (key) {
-                        case "email" -> "u.email = ?";
-                        case "date" -> "DATE(t.updated_date_time) = ?";
-                        default -> throw new IllegalStateException("Unexpected value: " + key);
-                    };
-                    args[argsIndex++] = value;
-                }
-                conditions[keyIndex++] = String.join(" OR ", orJoin);
-            }
-            String whereClause = " WHERE " + String.join(" AND ", conditions);
-            String query = SELECT_PREFIX + whereClause + ORDER_BY_SUFFIX;
-            return jdbcTemplate.query(query, taskResponseDtoRowMapper(), args);
+            sb.append(getWhereClause(conditionsMap));
         }
-        String query = SELECT_PREFIX + ORDER_BY_SUFFIX;
-        return jdbcTemplate.query(query, taskResponseDtoRowMapper());
+        sb.append(ORDER_BY_CLAUSE);
+        if (pageable!=null) {
+            sb.append(getLimitClause(pageable));
+        }
+        sb.append(";");
+        List<TaskResponseDto> results = jdbcTemplate.query(sb.toString(), taskResponseDtoRowMapper());
+        return new SliceImpl<>(results);
+    }
+
+    private String getLimitClause(Pageable pageable) {
+        return " LIMIT " + pageable.getPageSize() +" OFFSET " + pageable.getOffset();
+    }
+
+    private String getWhereClause(MultiValueMap<String, String> conditionsMap) {
+        List<String> andConditions = new ArrayList<>();
+        for (Map.Entry<String, List<String>> pair : conditionsMap.entrySet()) {
+            String key = pair.getKey();
+            String condition;
+            switch (key) {
+                case "email":
+                    condition = "u.email = ";
+                    break;
+                case "date":
+                    condition = "DATE(t.updated_date_time) = ";
+                    break;
+                default :
+                    continue;
+            }
+            List<String> values = pair.getValue();
+            String orJoinedCondition = "( " + values.stream().map(s -> condition + "\""+ s +"\"").collect(Collectors.joining(" OR ")) + " )";
+            andConditions.add(orJoinedCondition);
+        }
+        return " WHERE " + String.join(" AND ", andConditions);
     }
 
     @Override

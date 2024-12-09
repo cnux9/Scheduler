@@ -5,6 +5,8 @@ import com.tistory.cnux9.scheduler.lv4.dto.TaskResponseDto;
 import com.tistory.cnux9.scheduler.lv4.entity.Task;
 import com.tistory.cnux9.scheduler.lv4.repository.TaskRepository;
 import com.tistory.cnux9.scheduler.lv4.resource.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,8 +44,12 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskResponseDto> findTasks(MultiValueMap<String, Object> conditions) {
-        return taskRepository.findTasks(conditions);
+    public List<TaskResponseDto> findTasks(MultiValueMap<String, String> conditions) {
+        PageRequest pageRequest = null;
+        if (conditions.containsKey("page") && conditions.containsKey("size")) {
+            pageRequest = PageRequest.of(Integer.parseInt(conditions.get("page").get(0))-1, Integer.parseInt(conditions.get("size").get(0)));
+        }
+        return taskRepository.findTasks(pageRequest, conditions).getContent();
     }
 
     @Transactional
