@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Repository
 public class JdbcTemplateTaskRepository implements TaskRepository {
-    private final String SELECT_CLAUSE = "SELECT * FROM tasks AS t INNER JOIN users AS u ON t.user_id = u.user_id";
+    private final String SELECT_CLAUSE = "SELECT * FROM tasks AS t LEFT JOIN users AS u ON t.user_id = u.user_id";
     private final String ORDER_BY_CLAUSE = " ORDER BY t.updated_date_time DESC";
 
     private final JdbcTemplate jdbcTemplate;
@@ -39,7 +39,7 @@ public class JdbcTemplateTaskRepository implements TaskRepository {
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("content", task.getContent());
-        parameters.put("user_id", task.getUserId());
+        parameters.put("user_id", task.getUserId() );
         parameters.put("password", task.getPassword());
         parameters.put("created_date_time", task.getCreatedDateTime());
         parameters.put("updated_date_time", task.getUpdatedDateTime());
@@ -123,7 +123,7 @@ public class JdbcTemplateTaskRepository implements TaskRepository {
     @Override
     public int updateUser(Long userId, String name) {
         String query = "UPDATE users SET user_name = ? WHERE user_id = ?;";
-        int updatedRowNum = jdbcTemplate.update(query, name, userId);
+        int updatedRowNum = jdbcTemplate.update(query, name==null ? "" : name, userId);
         return updatedRowNum;
     }
 

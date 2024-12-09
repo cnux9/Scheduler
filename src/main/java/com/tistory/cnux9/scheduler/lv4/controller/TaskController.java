@@ -5,9 +5,11 @@ import com.tistory.cnux9.scheduler.lv4.dto.TaskRequestDto;
 import com.tistory.cnux9.scheduler.lv4.dto.TaskResponseDto;
 import com.tistory.cnux9.scheduler.lv4.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,7 +29,8 @@ public class TaskController {
 
     // 단건 생성
     @PostMapping
-    public ResponseEntity<TaskResponseDto> createTask(@RequestBody TaskRequestDto dto) {
+    public ResponseEntity<TaskResponseDto> createTask(@Validated @RequestBody TaskRequestDto dto) throws BadRequestException {
+        validateContent(dto.getContent());
         return new ResponseEntity<>(taskService.saveTask(dto), HttpStatus.CREATED);
     }
 
@@ -47,12 +50,10 @@ public class TaskController {
     @PutMapping("/{taskId}")
     public ResponseEntity<TaskResponseDto> updateTask(
             @PathVariable Long taskId,
-            @RequestBody Map<String, String> body
-    ) {
-        String name = body.getOrDefault("name", null);
-        TaskRequestDto dto = jacksonObjectMapper.convertValue(body, TaskRequestDto.class);
-
-        return ResponseEntity.ok(taskService.updateTask(taskId, name, dto));
+            @RequestBody TaskRequestDto dto
+    ) throws BadRequestException {
+        validateContent(dto.getContent());
+        return ResponseEntity.ok(taskService.updateTask(taskId, dto));
     }
 
     @DeleteMapping("/{taskId}")
@@ -62,5 +63,11 @@ public class TaskController {
     ) {
         taskService.deleteTask(taskId, password);
         return ResponseEntity.ok().build();
+    }
+
+    private void validateContent(String content) throws BadRequestException {
+        if (content.length()>200) {
+            throw new BadRequestException("The content exceed 200 letters.");
+        }
     }
 }

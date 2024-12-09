@@ -35,6 +35,9 @@ dependencies {
     implementation 'mysql:mysql-connector-java:8.0.28'
     // JDBC Template
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+
+    // Constraint 어노테이션 구현체 추가
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
 
 tasks.named('test') {

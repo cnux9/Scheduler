@@ -53,7 +53,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional
     @Override
-    public TaskResponseDto updateTask(Long taskId, String name, TaskRequestDto dto) {
+    public TaskResponseDto updateTask(Long taskId, TaskRequestDto dto) {
         Task task = taskRepository.findTaskById(taskId).orElseThrow(() -> new ResourceNotFoundException(taskId));
         if (!dto.getPassword().equals(task.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Your password is wrong.");
@@ -63,7 +63,7 @@ public class TaskServiceImpl implements TaskService {
         Task newTask = new Task(
                 taskId,
                 task.getUserId(),
-                name,
+                dto.getUserName(),
                 task.getEmail(),
                 task.getPassword(),
                 dto.getContent(),
@@ -73,9 +73,7 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.updateTask(taskId, newTask);
 
         // user_name 변경
-        taskRepository.updateUser(task.getUserId(), name);
-
-//        if (updatedRowNum == 0)
+        taskRepository.updateUser(task.getUserId(), dto.getUserName());
 
         return new TaskResponseDto(newTask);
     }
