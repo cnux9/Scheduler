@@ -63,7 +63,7 @@ public class TaskServiceImpl implements TaskService {
         Task newTask = new Task(
                 taskId,
                 task.getUserId(),
-                dto.getUserName(),
+                (task.getUserId() == 0) ? null : dto.getUserName(),
                 task.getEmail(),
                 task.getPassword(),
                 dto.getContent(),

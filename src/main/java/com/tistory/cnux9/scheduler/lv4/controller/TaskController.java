@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tistory.cnux9.scheduler.lv4.dto.TaskRequestDto;
 import com.tistory.cnux9.scheduler.lv4.dto.TaskResponseDto;
 import com.tistory.cnux9.scheduler.lv4.service.TaskService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
@@ -29,7 +30,7 @@ public class TaskController {
 
     // 단건 생성
     @PostMapping
-    public ResponseEntity<TaskResponseDto> createTask(@Validated @RequestBody TaskRequestDto dto) throws BadRequestException {
+    public ResponseEntity<TaskResponseDto> createTask(@Valid @RequestBody TaskRequestDto dto) throws BadRequestException {
         validateContent(dto.getContent());
         return new ResponseEntity<>(taskService.saveTask(dto), HttpStatus.CREATED);
     }
