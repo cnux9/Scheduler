@@ -2,6 +2,7 @@ package com.tistory.cnux9.scheduler.lv4.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 @Getter
 public class TaskRequestDto {
@@ -12,5 +13,6 @@ public class TaskRequestDto {
     @NotNull
     private String password;
     @NotNull
+    @Size(max = 200)
     private String content;
 }

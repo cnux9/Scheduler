@@ -73,7 +73,7 @@ public class JdbcTemplateTaskRepository implements TaskRepository {
             sb.append(getLimitClause(pageable));
         }
         sb.append(";");
-
+        // 쿼리문 실행
         List<TaskResponseDto> results = jdbcTemplate.query(sb.toString(), taskResponseDtoRowMapper());
         return new SliceImpl<>(results);
     }
@@ -97,6 +97,7 @@ public class JdbcTemplateTaskRepository implements TaskRepository {
                 case "date":
                     condition = "DATE(t.updated_date_time) = ";
                     break;
+                // 건뛰
                 case "page", "size":
                     continue;
                 default :

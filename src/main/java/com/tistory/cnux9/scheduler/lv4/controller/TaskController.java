@@ -30,8 +30,7 @@ public class TaskController {
 
     // 단건 생성
     @PostMapping
-    public ResponseEntity<TaskResponseDto> createTask(@Valid @RequestBody TaskRequestDto dto) throws BadRequestException {
-        validateContent(dto.getContent());
+    public ResponseEntity<TaskResponseDto> createTask(@Valid @RequestBody TaskRequestDto dto){
         return new ResponseEntity<>(taskService.saveTask(dto), HttpStatus.CREATED);
     }
 
@@ -52,8 +51,7 @@ public class TaskController {
     public ResponseEntity<TaskResponseDto> updateTask(
             @PathVariable Long taskId,
             @RequestBody TaskRequestDto dto
-    ) throws BadRequestException {
-        validateContent(dto.getContent());
+    ) {
         return ResponseEntity.ok(taskService.updateTask(taskId, dto));
     }
 
@@ -64,11 +62,5 @@ public class TaskController {
     ) {
         taskService.deleteTask(taskId, password);
         return ResponseEntity.ok().build();
-    }
-
-    private void validateContent(String content) throws BadRequestException {
-        if (content.length()>200) {
-            throw new BadRequestException("The content exceed 200 letters.");
-        }
     }
 }
