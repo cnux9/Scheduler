@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 public class TaskResponseDto {
     private Long taskId;
     private Long userId;
+    private String userName;
     private String email;
     private String content;
     private LocalDateTime createdDateTime;
@@ -19,6 +20,7 @@ public class TaskResponseDto {
     public TaskResponseDto(Task task) {
         this.taskId = task.getTaskId();
         this.userId = task.getUserId();
+        this.userName = task.getUserName();
         this.email = task.getEmail();
         this.content = task.getContent();
         this.createdDateTime = task.getCreatedDateTime();

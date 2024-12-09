@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class Task {
     private Long taskId;
     private Long userId;
+    private String userName;
     private String email;
     private String password;
     private String content;

@@ -2,14 +2,10 @@ package com.tistory.cnux9.scheduler.lv4.repository;
 
 import com.tistory.cnux9.scheduler.lv4.dto.TaskResponseDto;
 import com.tistory.cnux9.scheduler.lv4.entity.Task;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.util.MultiValueMap;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public interface TaskRepository {
@@ -19,7 +15,9 @@ public interface TaskRepository {
 
     Slice<TaskResponseDto> findTasks(Pageable Pageable, MultiValueMap<String, String> conditions);
 
-    int updateTask(Long id, Task task);
+    int updateTask(Long taskId, Task task);
+
+    int updateUser(Long userId, String name);
 
     void deleteTask(Long taskId);
 }

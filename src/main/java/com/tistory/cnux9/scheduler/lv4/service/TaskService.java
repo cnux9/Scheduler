@@ -13,7 +13,7 @@ public interface TaskService {
 
     List<TaskResponseDto> findTasks(MultiValueMap<String, String> conditions);
 
-    TaskResponseDto updateTask(Long taskId, TaskRequestDto dto);
+    TaskResponseDto updateTask(Long taskId, String name, TaskRequestDto dto);
 
     void deleteTask(Long taskId, String password);
 }

@@ -5,7 +5,6 @@ import com.tistory.cnux9.scheduler.lv4.dto.TaskResponseDto;
 import com.tistory.cnux9.scheduler.lv4.entity.Task;
 import com.tistory.cnux9.scheduler.lv4.repository.TaskRepository;
 import com.tistory.cnux9.scheduler.lv4.resource.ResourceNotFoundException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -54,19 +53,30 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional
     @Override
-    public TaskResponseDto updateTask(Long taskId, TaskRequestDto dto) {
+    public TaskResponseDto updateTask(Long taskId, String name, TaskRequestDto dto) {
         Task task = taskRepository.findTaskById(taskId).orElseThrow(() -> new ResourceNotFoundException(taskId));
         if (!dto.getPassword().equals(task.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Your password is wrong.");
         }
 
         // 덮어씌울 Task 객체 생성, 값 할당
-        Task newTask = new Task(dto);
-        newTask.setCreatedDateTime(task.getCreatedDateTime());
-        newTask.setUpdatedDateTime(LocalDateTime.now());
+        Task newTask = new Task(
+                taskId,
+                task.getUserId(),
+                name,
+                task.getEmail(),
+                task.getPassword(),
+                dto.getContent(),
+                task.getCreatedDateTime(),
+                LocalDateTime.now()
+        );
+        taskRepository.updateTask(taskId, newTask);
 
-        int updatedRowNum = taskRepository.updateTask(taskId, newTask);
+        // user_name 변경
+        taskRepository.updateUser(task.getUserId(), name);
+
 //        if (updatedRowNum == 0)
+
         return new TaskResponseDto(newTask);
     }
 

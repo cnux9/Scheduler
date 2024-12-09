@@ -1,5 +1,6 @@
 package com.tistory.cnux9.scheduler.lv4.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tistory.cnux9.scheduler.lv4.dto.TaskRequestDto;
 import com.tistory.cnux9.scheduler.lv4.dto.TaskResponseDto;
 import com.tistory.cnux9.scheduler.lv4.service.TaskService;
@@ -10,15 +11,18 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
 
     private final TaskService taskService;
+    private final ObjectMapper jacksonObjectMapper;
 
-    public TaskController(TaskService taskService) {
+    public TaskController(TaskService taskService, ObjectMapper jacksonObjectMapper) {
         this.taskService = taskService;
+        this.jacksonObjectMapper = jacksonObjectMapper;
     }
 
     // 단건 생성
@@ -43,9 +47,12 @@ public class TaskController {
     @PutMapping("/{taskId}")
     public ResponseEntity<TaskResponseDto> updateTask(
             @PathVariable Long taskId,
-            @RequestBody TaskRequestDto dto
+            @RequestBody Map<String, String> body
     ) {
-        return ResponseEntity.ok(taskService.updateTask(taskId, dto));
+        String name = body.getOrDefault("name", null);
+        TaskRequestDto dto = jacksonObjectMapper.convertValue(body, TaskRequestDto.class);
+
+        return ResponseEntity.ok(taskService.updateTask(taskId, name, dto));
     }
 
     @DeleteMapping("/{taskId}")
