@@ -2,9 +2,11 @@ package com.tistory.cnux9.scheduler.lv4.repository;
 
 import com.tistory.cnux9.scheduler.lv4.dto.TaskResponseDto;
 import com.tistory.cnux9.scheduler.lv4.entity.Task;
+import org.springframework.util.MultiValueMap;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface TaskRepository {
@@ -12,13 +14,7 @@ public interface TaskRepository {
 
     Optional<Task> findTaskById(Long TaskId);
 
-    List<TaskResponseDto> findAllTasks();
-
-    List<TaskResponseDto> findTasksByEmail(String email);
-
-    List<TaskResponseDto> findTasksByDate(LocalDate date);
-
-    List<TaskResponseDto> findTasksByEmailAndDate(String name, LocalDate date);
+    List<TaskResponseDto> findTasks(MultiValueMap<String, Object> conditions);
 
     int updateTask(Long id, Task task);
 

@@ -65,7 +65,7 @@ public class TaskController {
         return new ResponseEntity<>(taskService.updateTask(id, dto), HttpStatus.OK);
     }
 
-    // 원래 DELETE 메소드 요청에는 바디가 없지만 인증/인가를 아직 못배워서 비밀번호 바디에 전달
+    // TODO: DELETE 메소드 요청에는 바디가 없음
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> updateTask(
             @PathVariable Long id,

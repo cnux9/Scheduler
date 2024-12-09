@@ -2,13 +2,13 @@ package com.tistory.cnux9.scheduler.lv4.repository;
 
 import com.tistory.cnux9.scheduler.lv4.dto.TaskResponseDto;
 import com.tistory.cnux9.scheduler.lv4.entity.Task;
-import org.springframework.http.HttpStatus;
+import com.tistory.cnux9.scheduler.lv4.resource.ResourceNotFoundException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.util.MultiValueMap;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -42,7 +42,8 @@ public class JdbcTemplateTaskRepository implements TaskRepository {
         parameters.put("updated_date_time", task.getUpdatedDateTime());
 
         Number key = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
-        return new TaskResponseDto(findTaskById(key.longValue()));
+        Long taskId = key.longValue();
+        return new TaskResponseDto(findTaskById(taskId).orElseThrow(() -> new ResourceNotFoundException(taskId)));
     }
 
     @Override
@@ -51,27 +52,30 @@ public class JdbcTemplateTaskRepository implements TaskRepository {
         return result.stream().findAny();
     }
 
+    // 확장 편이성이 높은 다건 조건 검색
     @Override
-    public List<TaskResponseDto> findAllTasks() {
-        return jdbcTemplate.query(SELECT_PREFIX + ORDER_BY_SUFFIX, taskResponseDtoRowMapper());
-    }
+    public List<TaskResponseDto> findTasks(MultiValueMap<String, Object> conditions) {
+        Object[] args = new Object[conditions.size()];
+        String whereClause = "";
+        if (!conditions.isEmpty()) {
+            String[] clauses = new String[conditions.size()];
 
-    @Override
-    public List<TaskResponseDto> findTasksByEmail(String email) {
-        String query = SELECT_PREFIX + " WHERE u.email = ?" + ORDER_BY_SUFFIX;
-        return jdbcTemplate.query(query, taskResponseDtoRowMapper(), email);
-    }
-
-    @Override
-    public List<TaskResponseDto> findTasksByDate(LocalDate date) {
-        String query = SELECT_PREFIX + " WHERE DATE(t.updated_date_time) = ?" + ORDER_BY_SUFFIX;
-        return jdbcTemplate.query(query, taskResponseDtoRowMapper(), date);
-    }
-
-    @Override
-    public List<TaskResponseDto> findTasksByEmailAndDate(String email, LocalDate date) {
-        String query = SELECT_PREFIX + " WHERE u.email = ? AND DATE(t.updated_date_time) = ?" + ORDER_BY_SUFFIX;
-        return jdbcTemplate.query(query, taskResponseDtoRowMapper(), email, date);
+            int clausesIndex = 0;
+            int argsIndex = 0;
+            for (String key : conditions.keySet()) {
+                for (Object value : conditions.get(key)) {
+                    clauses[clausesIndex++] = switch (key) {
+                        case "email" -> "u.email = ?";
+                        case "date" -> "DATE(t.updated_date_time) = ?";
+                        default -> throw new IllegalStateException("Unexpected value: " + key);
+                    };
+                    args[argsIndex++] = value;
+                }
+            }
+            whereClause = " WHERE " + String.join(" AND ", clauses);
+        }
+        String query = SELECT_PREFIX + whereClause + ORDER_BY_SUFFIX;
+        return jdbcTemplate.query(query, taskResponseDtoRowMapper(), args);
     }
 
     @Override

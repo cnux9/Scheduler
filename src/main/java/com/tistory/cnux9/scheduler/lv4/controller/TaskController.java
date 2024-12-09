@@ -6,6 +6,7 @@ import com.tistory.cnux9.scheduler.lv4.dto.TaskSearchDto;
 import com.tistory.cnux9.scheduler.lv4.service.TaskService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,8 +35,8 @@ public class TaskController {
 
     // 다건 조회
     @GetMapping
-    public ResponseEntity<List<TaskResponseDto>> findFilteredTasks(@ModelAttribute TaskSearchDto dto) {
-        return ResponseEntity.ok(taskService.findTasks(dto));
+    public ResponseEntity<List<TaskResponseDto>> findFilteredTasks(@RequestBody MultiValueMap<String, Object> conditions) {
+        return ResponseEntity.ok(taskService.findTasks(conditions));
     }
 
     // 단건 전체 수정
@@ -47,13 +48,12 @@ public class TaskController {
         return ResponseEntity.ok(taskService.updateTask(taskId, dto));
     }
 
-    // 원래 DELETE 메소드 요청에는 바디가 없지만 인증/인가를 아직 못배워서 비밀번호 바디에 전달
     @DeleteMapping("/{taskId}")
     public ResponseEntity<Void> deleteTask(
             @PathVariable Long taskId,
-            @RequestBody TaskRequestDto dto
+            @RequestBody String password
     ) {
-        taskService.deleteTask(taskId, dto);
+        taskService.deleteTask(taskId, password);
         return ResponseEntity.ok().build();
     }
 }
