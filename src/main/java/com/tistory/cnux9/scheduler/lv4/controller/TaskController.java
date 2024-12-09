@@ -21,11 +21,9 @@ import java.util.Map;
 public class TaskController {
 
     private final TaskService taskService;
-    private final ObjectMapper jacksonObjectMapper;
 
     public TaskController(TaskService taskService, ObjectMapper jacksonObjectMapper) {
         this.taskService = taskService;
-        this.jacksonObjectMapper = jacksonObjectMapper;
     }
 
     // 단건 생성

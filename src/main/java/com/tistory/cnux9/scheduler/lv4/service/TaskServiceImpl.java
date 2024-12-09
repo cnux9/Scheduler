@@ -63,6 +63,7 @@ public class TaskServiceImpl implements TaskService {
         Task newTask = new Task(
                 taskId,
                 task.getUserId(),
+                // 외래키가 0인 경우 실제 DB와 값이 달라지는 경우 발생
                 (task.getUserId() == 0) ? null : dto.getUserName(),
                 task.getEmail(),
                 task.getPassword(),
@@ -70,9 +71,9 @@ public class TaskServiceImpl implements TaskService {
                 task.getCreatedDateTime(),
                 LocalDateTime.now()
         );
+        // tasks 테이블 변경
         taskRepository.updateTask(taskId, newTask);
-
-        // user_name 변경
+        // users.user_name 칼럼 변경
         taskRepository.updateUser(task.getUserId(), dto.getUserName());
 
         return new TaskResponseDto(newTask);
