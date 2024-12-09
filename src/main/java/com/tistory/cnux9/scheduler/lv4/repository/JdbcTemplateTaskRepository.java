@@ -56,24 +56,30 @@ public class JdbcTemplateTaskRepository implements TaskRepository {
 
     // 확장 편이성이 높은 다건 조건 검색
     @Override
-    public List<TaskResponseDto> findTasks(MultiValueMap<String, Object> conditions) {
-        if (!conditions.isEmpty()) {
-            String[] clauses = new String[conditions.size()];
-            Object[] args = new Object[conditions.size()];
-            int clausesIndex = 0;
+    public List<TaskResponseDto> findTasks(MultiValueMap<String, Object> conditionsMap) {
+        log.info("JdbcTemplateTaskRepository.findTasks() is called.");
+        if (!conditionsMap.isEmpty()) {
+            int length = conditionsMap.size();
+            String[] conditions = new String[length];
+            Object[] args = new Object[conditionsMap.values().stream().mapToInt(List::size).sum()];
+            int keyIndex = 0;
             int argsIndex = 0;
-            for (String key : conditions.keySet()) {
-                for (Object value : conditions.get(key)) {
+            for (String key : conditionsMap.keySet()) {
+                List<Object> values = conditionsMap.get(key);
+                String[] orJoin = new String[values.size()];
+                int orIndex = 0;
+                for (Object value : values) {
                     log.info(key + ": " + value);
-                    clauses[clausesIndex++] = switch (key) {
+                    orJoin[orIndex++] = switch (key) {
                         case "email" -> "u.email = ?";
                         case "date" -> "DATE(t.updated_date_time) = ?";
                         default -> throw new IllegalStateException("Unexpected value: " + key);
                     };
                     args[argsIndex++] = value;
                 }
+                conditions[keyIndex++] = String.join(" OR ", orJoin);
             }
-            String whereClause = " WHERE " + String.join(" AND ", clauses);
+            String whereClause = " WHERE " + String.join(" AND ", conditions);
             String query = SELECT_PREFIX + whereClause + ORDER_BY_SUFFIX;
             return jdbcTemplate.query(query, taskResponseDtoRowMapper(), args);
         }

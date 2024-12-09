@@ -35,7 +35,7 @@ public class TaskController {
 
     // 다건 조회
     @GetMapping
-    public ResponseEntity<List<TaskResponseDto>> findTasks(@RequestParam(required = false) MultiValueMap<String, Object> conditions) {
+    public ResponseEntity<List<TaskResponseDto>> findTasks(@RequestParam MultiValueMap<String, Object> conditions) {
         return ResponseEntity.ok(taskService.findTasks(conditions));
     }
 
