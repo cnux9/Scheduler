@@ -34,6 +34,7 @@ public class JdbcTemplateTaskRepository implements TaskRepository {
 
     @Override
     public TaskResponseDto saveTask(Task task) {
+        System.out.println();
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
         jdbcInsert.withTableName("tasks").usingGeneratedKeyColumns("task_id");
 
@@ -111,7 +112,7 @@ public class JdbcTemplateTaskRepository implements TaskRepository {
     }
 
     private String getLimitClause(Pageable pageable) {
-        return " LIMIT " + pageable.getPageSize() +" OFFSET " + pageable.getOffset();
+        return " LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();
     }
 
     @Override

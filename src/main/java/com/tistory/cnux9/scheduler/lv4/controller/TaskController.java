@@ -1,20 +1,15 @@
 package com.tistory.cnux9.scheduler.lv4.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tistory.cnux9.scheduler.lv4.dto.TaskRequestDto;
 import com.tistory.cnux9.scheduler.lv4.dto.TaskResponseDto;
 import com.tistory.cnux9.scheduler.lv4.service.TaskService;
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/tasks")
@@ -22,7 +17,7 @@ public class TaskController {
 
     private final TaskService taskService;
 
-    public TaskController(TaskService taskService, ObjectMapper jacksonObjectMapper) {
+    public TaskController(TaskService taskService) {
         this.taskService = taskService;
     }
 
@@ -48,7 +43,7 @@ public class TaskController {
     @PutMapping("/{taskId}")
     public ResponseEntity<TaskResponseDto> updateTask(
             @PathVariable Long taskId,
-            @RequestBody TaskRequestDto dto
+            @Valid @RequestBody TaskRequestDto dto
     ) {
         return ResponseEntity.ok(taskService.updateTask(taskId, dto));
     }
