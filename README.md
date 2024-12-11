@@ -106,6 +106,11 @@ GET localhost:8080/tasks?email=sun@kbs.co.kr&date=2024-12-08&date=2024-12-10
 ## **할일 수정**
 ```
 PUT localhost:8080/tasks/26
+{
+    "name": "김인선",
+    "password": "1234",
+    "content": "밤티라미수만 사오기"
+}
 ```
 ```
 200 OK
