@@ -9,10 +9,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
-//    List<Task> findAllByUserNameAndCreatedDateTime(Iterable<Long> longs);
-//
-//    void updateTaskById(Long taskId, Task newTask);
-
     default Task findByIdOrElseThrow(Long id) {
         return findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Id does not exist : " + id));
     }

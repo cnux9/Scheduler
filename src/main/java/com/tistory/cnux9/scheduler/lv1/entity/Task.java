@@ -28,6 +28,7 @@ public class Task {
 
     private String password;
 
+    @Setter
     private String content;
 
     @Setter

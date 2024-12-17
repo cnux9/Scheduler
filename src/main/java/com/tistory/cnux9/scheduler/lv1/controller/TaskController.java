@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/tasks")
 @RequiredArgsConstructor
@@ -29,19 +31,19 @@ public class TaskController {
     }
 
     // 다건 조회
-//    @GetMapping
-//    public ResponseEntity<List<TaskResponseDto>> findTasks(@RequestParam MultiValueMap<String, String> conditions) {
-//        return ResponseEntity.ok(taskService.findTasks(conditions));
-//    }
+    @GetMapping
+    public ResponseEntity<List<TaskResponseDto>> findTasks() {
+        return ResponseEntity.ok(taskService.findTasks());
+    }
 
     // 단건 전체 수정
-//    @PutMapping("/{taskId}")
-//    public ResponseEntity<TaskResponseDto> updateTask(
-//            @PathVariable Long taskId,
-//            @Valid @RequestBody TaskRequestDto dto
-//    ) {
-//        return ResponseEntity.ok(taskService.updateTask(taskId, dto));
-//    }
+    @PutMapping("/{taskId}")
+    public ResponseEntity<TaskResponseDto> updateTask(
+            @PathVariable Long taskId,
+            @Validated @RequestBody TaskRequestDto dto
+    ) {
+        return ResponseEntity.ok(taskService.updateTask(taskId, dto));
+    }
 
     @DeleteMapping("/{taskId}")
     public ResponseEntity<Void> deleteTask(

@@ -6,10 +6,17 @@ import com.tistory.cnux9.scheduler.lv1.entity.Task;
 import com.tistory.cnux9.scheduler.lv1.entity.User;
 import com.tistory.cnux9.scheduler.lv1.repository.TaskRepository;
 import com.tistory.cnux9.scheduler.lv1.repository.UserRepository;
+import com.tistory.cnux9.scheduler.lv1.resource.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,41 +39,27 @@ public class TaskService {
         return new TaskResponseDto(task);
     }
 
-//    public List<TaskResponseDto> findTasks(MultiValueMap<String, String> conditions) {
-//        PageRequest pageRequest = null;
-//        if (conditions.containsKey("page") && conditions.containsKey("size")) {
-//            pageRequest = PageRequest.of(Integer.parseInt(conditions.get("page").get(0))-1, Integer.parseInt(conditions.get("size").get(0)));
-//        }
-//        return taskRepository.findAllByUserNameAndCreatedDateTime(pageRequest, conditions).getContent();
-//    }
-//
-//    public TaskResponseDto updateTask(Long taskId, TaskRequestDto dto) {
-//        Task task = taskRepository.findById(taskId).orElseThrow(() -> new ResourceNotFoundException(taskId));
-//        if (!dto.getPassword().equals(task.getPassword())) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Your password is wrong.");
-//        }
-//
-//
-//
-//        // 덮어씌울 Task 객체 생성, 값 할당
-//        Task newTask = new Task(
-//                taskId,
-//                task.getUserId(),
-//                // 외래키가 0인 경우 실제 DB와 값이 달라지는 경우 발생
-//                (task.getUserId() == 0) ? null : dto.getUserName(),
-//                task.getEmail(),
-//                task.getPassword(),
-//                dto.getContent(),
-//                task.getCreatedDateTime(),
-//                LocalDateTime.now()
-//        );
-//        // tasks 테이블 변경
-//        taskRepository.updateTaskById(taskId, newTask);
-//        // users.user_name 칼럼 변경
-//        userRepository.updateNameById(task.getUserId(), dto.getUserName());
-//
-//        return new TaskResponseDto(newTask);
-//    }
+    public List<TaskResponseDto> findTasks() {
+        return taskRepository.findAll().stream().map(TaskResponseDto::new).toList();
+    }
+
+    public TaskResponseDto updateTask(Long taskId, TaskRequestDto dto) {
+        Task task = taskRepository.findByIdOrElseThrow(taskId);
+        if (!dto.getPassword().equals(task.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Your password is wrong.");
+        }
+
+        task.setContent(dto.getContent());
+        Long newUserId = dto.getUserId();
+        if (newUserId!=null) {
+            if (task.getUser() == null || !task.getUser().getUserId().equals(newUserId) ) {
+                User foundUser = userRepository.findByIdOrElseThrow(dto.getUserId());
+                task.setUser(foundUser);
+            }
+        }
+
+        return new TaskResponseDto(task);
+    }
 
     public void deleteTask(Long taskId, String password) {
         Task task = taskRepository.findByIdOrElseThrow(taskId);
