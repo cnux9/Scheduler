@@ -1,4 +1,4 @@
-package com.tistory.cnux9.scheduler.lv4.resource;
+package com.tistory.cnux9.scheduler.lv1.resource;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;

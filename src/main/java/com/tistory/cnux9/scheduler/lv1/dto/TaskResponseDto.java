@@ -1,6 +1,7 @@
 package com.tistory.cnux9.scheduler.lv1.dto;
 
 import com.tistory.cnux9.scheduler.lv1.entity.Task;
+import com.tistory.cnux9.scheduler.lv1.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -9,17 +10,25 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 public class TaskResponseDto {
-    private Long id;
+    private Long taskId;
+    private Long userId;
+    private String userName;
+    private String email;
     private String content;
-    private String name;
     private LocalDateTime createdDateTime;
     private LocalDateTime updatedDateTime;
 
     public TaskResponseDto(Task task) {
-        this.id = task.getId();
+        this.taskId = task.getTaskId();
         this.content = task.getContent();
-        this.name = task.getName();
         this.createdDateTime = task.getCreatedDateTime();
         this.updatedDateTime = task.getUpdatedDateTime();
+
+        User user = task.getUser();
+        if (user != null) {
+            this.userId = user.getUserId();
+            this.userName = user.getUserName();
+            this.email = user.getEmail();
+        }
     }
 }

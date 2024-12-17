@@ -6,14 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-
-public interface TaskRepository extends JpaRepository<Task, Long> {
-//    List<Task> findAllByUserNameAndCreatedDateTime(Iterable<Long> longs);
+public interface UserRepository extends JpaRepository<User, Long> {
+//    void updateUserNameById(Long userId, String userName);
 //
-//    void updateTaskById(Long taskId, Task newTask);
+//    void updateNameById(Long userId, String userName);
 
-    default Task findByIdOrElseThrow(Long id) {
+    default User findByIdOrElseThrow(Long id) {
         return findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Id does not exist : " + id));
     }
 }

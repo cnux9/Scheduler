@@ -3,63 +3,52 @@ package com.tistory.cnux9.scheduler.lv1.controller;
 import com.tistory.cnux9.scheduler.lv1.dto.TaskRequestDto;
 import com.tistory.cnux9.scheduler.lv1.dto.TaskResponseDto;
 import com.tistory.cnux9.scheduler.lv1.service.TaskService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/tasks")
+@RequiredArgsConstructor
 public class TaskController {
 
     private final TaskService taskService;
 
-    public TaskController(TaskService taskService) {
-        this.taskService = taskService;
-    }
-
     // 단건 생성
     @PostMapping
-    public ResponseEntity<TaskResponseDto> createTask(@RequestBody TaskRequestDto dto) {
-        System.out.println(dto.getName());
+    public ResponseEntity<TaskResponseDto> createTask(@Validated @RequestBody TaskRequestDto dto){
         return new ResponseEntity<>(taskService.saveTask(dto), HttpStatus.CREATED);
     }
 
     // 단건 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<TaskResponseDto> findTaskById(@PathVariable Long id) {
-        return new ResponseEntity<>(taskService.findTaskById(id), HttpStatus.OK);
+    @GetMapping("/{taskId}")
+    public ResponseEntity<TaskResponseDto> findTaskByTaskId(@PathVariable Long taskId) {
+        return ResponseEntity.ok(taskService.findTaskById(taskId));
     }
 
     // 다건 조회
-    @GetMapping
-    public ResponseEntity<List<TaskResponseDto>> findFilteredTasks(
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "date", required = false) LocalDate date) {
-        List<TaskResponseDto> taskList;
-        if (name == null) {
-            if (date == null) {
-                taskList = taskService.findAllTasks();
-            } else {
-                taskList = taskService.findTasksByDate(date);
-            }
-        } else {
-            if (date == null) {
-                taskList = taskService.findTasksByName(name);
-            } else {
-                taskList = taskService.findTasksByNameAndDate(name, date);
-            }
-        }
-        return new ResponseEntity<>(taskList, HttpStatus.OK);
-    }
+//    @GetMapping
+//    public ResponseEntity<List<TaskResponseDto>> findTasks(@RequestParam MultiValueMap<String, String> conditions) {
+//        return ResponseEntity.ok(taskService.findTasks(conditions));
+//    }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<TaskResponseDto> updateTask(
-            @PathVariable Long id,
-            @RequestBody TaskRequestDto dto
+    // 단건 전체 수정
+//    @PutMapping("/{taskId}")
+//    public ResponseEntity<TaskResponseDto> updateTask(
+//            @PathVariable Long taskId,
+//            @Valid @RequestBody TaskRequestDto dto
+//    ) {
+//        return ResponseEntity.ok(taskService.updateTask(taskId, dto));
+//    }
+
+    @DeleteMapping("/{taskId}")
+    public ResponseEntity<Void> deleteTask(
+            @PathVariable Long taskId,
+            @RequestParam String password
     ) {
-        return new ResponseEntity<>(taskService.updateTask(id, dto), HttpStatus.OK);
+        taskService.deleteTask(taskId, password);
+        return ResponseEntity.ok().build();
     }
 }
