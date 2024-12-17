@@ -21,7 +21,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
 
     public TaskResponseDto save(TaskRequestDto dto) {
-        Task task = new Task(dto);
+        Task task = new Task(dto.getContent());
         if (dto.getUserId() != null) {
             User foundUser = userRepository.findByIdOrElseThrow(dto.getUserId());
             task.setUser(foundUser);
@@ -40,7 +40,7 @@ public class TaskService {
 
     public TaskResponseDto update(Long taskId, TaskRequestDto dto) {
         Task task = taskRepository.findByIdOrElseThrow(taskId);
-        if (!dto.getPassword().equals(task.getPassword())) {
+        if (!dto.getPassword().equals(task.getUser().getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Your password is wrong.");
         }
 
@@ -58,7 +58,7 @@ public class TaskService {
 
     public void delete(Long taskId, String password) {
         Task task = taskRepository.findByIdOrElseThrow(taskId);
-        if (!password.equals(task.getPassword())) {
+        if (!password.equals(task.getUser().getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Your password is wrong.");
         }
         taskRepository.delete(task);

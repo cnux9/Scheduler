@@ -16,7 +16,6 @@ public class UserService {
     private final UserRepository userRepository;
 
     public UserResponseDto save(UserRequestDto dto) {
-        System.out.println("dd");
         return new UserResponseDto(userRepository.save(new User(dto)));
     }
 

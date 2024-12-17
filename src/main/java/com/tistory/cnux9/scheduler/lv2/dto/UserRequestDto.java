@@ -14,5 +14,6 @@ public class UserRequestDto {
     @NotNull
     @Email
     private String email;
+
     private String password;
 }

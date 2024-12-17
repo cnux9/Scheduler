@@ -26,8 +26,6 @@ public class Task {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private String password;
-
     @Setter
     private String content;
 
@@ -40,8 +38,7 @@ public class Task {
     @LastModifiedDate
     private LocalDateTime updatedDateTime;
 
-    public Task(TaskRequestDto dto) {
-        this.password = dto.getPassword();
-        this.content = dto.getContent();
+    public Task(String content) {
+        this.content = content;
     }
 }

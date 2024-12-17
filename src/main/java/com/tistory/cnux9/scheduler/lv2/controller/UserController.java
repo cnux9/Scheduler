@@ -22,7 +22,6 @@ public class UserController {
     // 단건 생성
     @PostMapping
     public ResponseEntity<UserResponseDto> save(@Validated @RequestBody UserRequestDto dto){
-        System.out.println("ee");
         return new ResponseEntity<>(userService.save(dto), HttpStatus.CREATED);
     }
 
