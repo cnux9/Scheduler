@@ -45,9 +45,6 @@ public class TaskService {
     @Transactional
     public TaskResponseDto update(Long taskId, TaskRequestDto dto) {
         Task task = taskRepository.findByIdOrElseThrow(taskId);
-        if (!dto.getPassword().equals(task.getUser().getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Your password is wrong.");
-        }
 
         task.setContent(dto.getContent());
         Long newUserId = dto.getUserId();

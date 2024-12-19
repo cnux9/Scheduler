@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.util.List;
+
 @Getter
 @Entity
 @Table(name = "users")
@@ -28,6 +30,8 @@ public class User extends CreatedEntity{
     @Column(unique = true)
     private String email;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Task> taskList;
 
     public User(UserRequestDto dto) {
         this.userName = dto.getUserName();
