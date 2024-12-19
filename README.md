@@ -31,7 +31,6 @@
 | PUT         | `/users/{userId}`    | 특정 유저 정보를 수정한다.     | 200 OK       | **Request Body**: user_name, email            | 수정된 유저의 상세 정보          |
 | DELETE      | `/users/{userId}`    | 특정 유저를 삭제한다.          | 200 OK       | 없음                                         | 없음(상태코드로만 응답)          |
 
-(로그인 관련 엔드포인트는 제공된 JSON 상에서 구체적인 URL 및 요청 정보가 없어 생략하였습니다.)
 
 ## Tasks 관련 API
 
@@ -45,7 +44,6 @@
 | PUT         | `/tasks/{taskId}`   | 특정 ID의 할 일을 수정한다.              | 200 OK         | **Request Body**: password, 수정할 content                                             | 수정된 할 일의 상세 정보                  |
 | DELETE      | `/tasks/{taskId}`   | 특정 ID의 할 일을 삭제한다.              | 200 OK         | **Query Params**: password                                                             | 없음 (상태코드로만 응답)                  |
 
-(참고: Postman Collection 내에는 같은 `/tasks` 엔드포인트로 여러 케이스를 테스트하는 요청이 있지만, 문서에는 보통 정상 동작 기준으로만 기재합니다.)
 
 ## Comments 관련 API
 
