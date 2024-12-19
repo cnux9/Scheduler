@@ -57,7 +57,37 @@
 </br>
 
 # 6. 데이터베이스 ERD
+```mermaid
+erDiagram
+    USERS {
+        bigint user_id PK
+        varchar email "unique"
+        varchar password
+        varchar user_name
+        datetime created_date_time
+    }
 
+    TASKS {
+        bigint task_id PK
+        datetime created_date_time
+        datetime updated_date_time
+        bigint user_id FK
+        varchar content
+    }
+
+    COMMENTS {
+        bigint comment_id PK
+        datetime created_date_time
+        datetime updated_date_time
+        bigint user_id FK
+        bigint task_id FK
+        varchar content
+    }
+
+    USERS ||--o{ TASKS : "has many"
+    USERS ||--o{ COMMENTS : "has many"
+    TASKS ||--o{ COMMENTS : "has many"
+```
 
 </br>
 
