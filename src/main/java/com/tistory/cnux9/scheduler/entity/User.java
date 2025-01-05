@@ -1,0 +1,41 @@
+package com.tistory.cnux9.scheduler.entity;
+
+import com.tistory.cnux9.scheduler.config.PasswordEncoder;
+import com.tistory.cnux9.scheduler.dto.user.UserRequestDto;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.util.List;
+
+@Getter
+@Entity
+@Table(name = "users")
+@EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor
+public class User extends CreatedEntity{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long userId;
+
+    @Setter
+    @Column(name = "user_name")
+    private String userName;
+
+    private String password;
+
+    @Setter
+    @Column(unique = true)
+    private String email;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Task> taskList;
+
+    public User(UserRequestDto dto) {
+        this.userName = dto.getUserName();
+        this.password = PasswordEncoder.encode(dto.getPassword());
+        this.email = dto.getEmail();
+    }
+}
