@@ -1,6 +1,6 @@
 package com.tistory.cnux9.scheduler.filter;
 
-import com.tistory.cnux9.scheduler.util.Const;
+import com.tistory.cnux9.scheduler.common.Const;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

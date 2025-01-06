@@ -1,6 +1,6 @@
 package com.tistory.cnux9.scheduler.entity;
 
-import com.tistory.cnux9.scheduler.config.PasswordEncoder;
+import com.tistory.cnux9.scheduler.util.PasswordEncoder;
 import com.tistory.cnux9.scheduler.dto.user.UserRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -5,7 +5,7 @@ import com.tistory.cnux9.scheduler.dto.login.LoginResponseDto;
 import com.tistory.cnux9.scheduler.dto.user.UserRequestDto;
 import com.tistory.cnux9.scheduler.dto.user.UserResponseDto;
 import com.tistory.cnux9.scheduler.service.UserService;
-import com.tistory.cnux9.scheduler.util.Const;
+import com.tistory.cnux9.scheduler.common.Const;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;

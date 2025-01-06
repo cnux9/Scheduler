@@ -10,13 +10,13 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 public class TaskResponseDto {
-    private Long taskId;
-    private Long userId;
-    private String userName;
-    private String email;
-    private String content;
-    private LocalDateTime createdDateTime;
-    private LocalDateTime updatedDateTime;
+    private final Long taskId;
+    private final Long userId;
+    private final String userName;
+    private final String email;
+    private final String content;
+    private final LocalDateTime createdDateTime;
+    private final LocalDateTime updatedDateTime;
 
     public TaskResponseDto(Task task) {
         this.taskId = task.getTaskId();
@@ -29,6 +29,10 @@ public class TaskResponseDto {
             this.userId = user.getUserId();
             this.userName = user.getUserName();
             this.email = user.getEmail();
+        } else {
+            this.userId = null;
+            this.userName = null;
+            this.email = null;
         }
     }
 }
