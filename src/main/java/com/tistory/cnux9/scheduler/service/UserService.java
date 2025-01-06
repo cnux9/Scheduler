@@ -5,17 +5,20 @@ import com.tistory.cnux9.scheduler.dto.login.LoginResponseDto;
 import com.tistory.cnux9.scheduler.dto.user.UserRequestDto;
 import com.tistory.cnux9.scheduler.dto.user.UserResponseDto;
 import com.tistory.cnux9.scheduler.entity.User;
+import com.tistory.cnux9.scheduler.exception.IdNotFoundException;
+import com.tistory.cnux9.scheduler.exception.InvalidPasswordException;
+import com.tistory.cnux9.scheduler.exception.EmailNotFoundException;
 import com.tistory.cnux9.scheduler.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserService {
     private final UserRepository userRepository;
 
@@ -23,17 +26,18 @@ public class UserService {
         return new UserResponseDto(userRepository.save(new User(dto)));
     }
 
+    @Transactional(readOnly = true)
     public UserResponseDto find(Long userId) {
-        return new UserResponseDto(userRepository.findByIdOrElseThrow(userId));
+        return new UserResponseDto(findByIdOrElseThrow(userId));
     }
 
+    @Transactional(readOnly = true)
     public List<UserResponseDto> findAll() {
         return userRepository.findAll().stream().map(UserResponseDto::new).toList();
     }
 
-    @Transactional
     public UserResponseDto update(Long userId, UserRequestDto dto) {
-        User foundUser = userRepository.findByIdOrElseThrow(userId);
+        User foundUser = findByIdOrElseThrow(userId);
         foundUser.setUserName(dto.getUserName());
         foundUser.setEmail(dto.getEmail());
 
@@ -48,13 +52,19 @@ public class UserService {
         User foundUser = userRepository.findByEmail(email);
 
         if (foundUser == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Email does not exist : " + email);
+            throw new EmailNotFoundException(email);
         }
 
         if (!PasswordEncoder.matches(password, foundUser.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Password is wrong : " + password);
+            throw new InvalidPasswordException();
         }
 
         return new LoginResponseDto(foundUser);
+    }
+
+//    @Transactional(propagation = Propagation.REQUIRED)
+//    @Transactional
+    User findByIdOrElseThrow(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new IdNotFoundException(id));
     }
 }

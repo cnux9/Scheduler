@@ -33,7 +33,7 @@ public class LoginFilter implements Filter {
 //            if (session == null || session.getAttribute("sessionKey") == null) {
             if (session == null || session.getAttribute(Const.LOGIN_USER) == null) {
                 System.out.println(session == null);
-                throw new RuntimeException("로그인 해주세요.");
+                throw new NotLoggedInException();
             }
 
             log.info("로그인에 성공했습니다.");

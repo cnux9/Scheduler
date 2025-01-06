@@ -10,14 +10,14 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 public class CommentResponseDto {
-    private Long commentId;
-    private Long taskId;
-    private Long userId;
-    private String userName;
-    private String email;
-    private String content;
-    private LocalDateTime createdDateTime;
-    private LocalDateTime updatedDateTime;
+    private final Long commentId;
+    private final Long taskId;
+    private final Long userId;
+    private final String userName;
+    private final String email;
+    private final String content;
+    private final LocalDateTime createdDateTime;
+    private final LocalDateTime updatedDateTime;
 
     public CommentResponseDto(Comment comment) {
         this.commentId = comment.getCommentId();
