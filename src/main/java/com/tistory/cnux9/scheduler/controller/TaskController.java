@@ -20,7 +20,7 @@ public class TaskController {
 
     // 단건 생성
     @PostMapping
-    public ResponseEntity<TaskResponseDto> save(@Validated @RequestBody TaskRequestDto dto){
+    public ResponseEntity<TaskResponseDto> save(@Validated @RequestBody TaskRequestDto dto) {
         return new ResponseEntity<>(taskService.save(dto), HttpStatus.CREATED);
     }
 

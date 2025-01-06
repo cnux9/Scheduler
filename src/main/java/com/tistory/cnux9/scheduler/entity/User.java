@@ -1,7 +1,7 @@
 package com.tistory.cnux9.scheduler.entity;
 
-import com.tistory.cnux9.scheduler.util.PasswordEncoder;
 import com.tistory.cnux9.scheduler.dto.user.UserRequestDto;
+import com.tistory.cnux9.scheduler.util.PasswordEncoder;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +15,7 @@ import java.util.List;
 @Table(name = "users")
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
-public class User extends CreatedEntity{
+public class User extends CreatedEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;

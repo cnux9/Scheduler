@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 @Table(name = "tasks")
 @NoArgsConstructor
-public class Task extends CreatedEntity{
+public class Task extends CreatedEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long taskId;

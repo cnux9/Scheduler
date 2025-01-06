@@ -13,7 +13,7 @@ public class CommentRequestDto {
     private final Long taskId;
     @JsonProperty("user_id")
     private final Long userId;
-//    @JsonProperty("name")
+    //    @JsonProperty("name")
 //    private String userName;
     @NotNull
     private final String password;

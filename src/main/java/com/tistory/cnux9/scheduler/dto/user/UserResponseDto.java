@@ -7,10 +7,11 @@ import java.time.LocalDateTime;
 
 @Getter
 public class UserResponseDto {
-    private Long userId;
-    private String userName;
-    private String email;
-    private LocalDateTime createdDateTime;
+    private final Long userId;
+    private final String userName;
+    private final String email;
+    private final LocalDateTime createdDateTime;
+
     public UserResponseDto(User user) {
         this.userId = user.getUserId();
         this.userName = user.getUserName();

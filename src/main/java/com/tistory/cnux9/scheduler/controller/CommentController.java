@@ -21,7 +21,7 @@ public class CommentController {
 
     // 단건 생성
     @PostMapping
-    public ResponseEntity<CommentResponseDto> save(@Validated @RequestBody CommentRequestDto dto){
+    public ResponseEntity<CommentResponseDto> save(@Validated @RequestBody CommentRequestDto dto) {
         return new ResponseEntity<>(commentService.save(dto), HttpStatus.CREATED);
     }
 
