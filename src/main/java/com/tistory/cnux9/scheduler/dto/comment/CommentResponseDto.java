@@ -22,7 +22,6 @@ public class CommentResponseDto {
     public CommentResponseDto(Comment comment) {
         this.commentId = comment.getCommentId();
         this.taskId = comment.getTask().getTaskId();
-        this.userId = comment.getUser().getUserId();
         this.content = comment.getContent();
         this.createdDateTime = comment.getCreatedDateTime();
         this.updatedDateTime = comment.getUpdatedDateTime();
@@ -32,6 +31,10 @@ public class CommentResponseDto {
             this.userId = user.getUserId();
             this.userName = user.getUserName();
             this.email = user.getEmail();
+        } else {
+            this.userId = null;
+            this.userName = null;
+            this.email = null;
         }
     }
 }

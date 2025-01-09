@@ -60,6 +60,7 @@ public class UserService {
         return new LoginResponseDto(foundUser);
     }
 
+//    User getById(Long id) {
     User findByIdOrElseThrow(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new IdNotFoundException(id));
     }

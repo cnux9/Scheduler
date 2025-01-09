@@ -45,6 +45,9 @@ dependencies {
 
     // PasswordEncoder
     implementation 'at.favre.lib:bcrypt:0.10.2'
+
+    // ElasticSearch
+    implementation 'org.springframework.data:spring-data-elasticsearch:4.2.2'
 }
 
 tasks.named('test') {

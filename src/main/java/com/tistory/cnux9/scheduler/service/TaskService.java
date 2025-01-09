@@ -54,7 +54,7 @@ public class TaskService {
         return new TaskResponseDto(task);
     }
 
-    Task findByIdOrElseThrow(Long taskId) {
+    public Task findByIdOrElseThrow(Long taskId) {
         return taskRepository.findById(taskId).orElseThrow(() -> new IdNotFoundException(taskId));
     }
 
