@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -27,6 +29,7 @@ public class UserController {
     // 단건 생성
     @PostMapping
     public ResponseEntity<UserResponseDto> save(@Validated @RequestBody UserRequestDto dto) {
+        log.info("첫번째 버전");
         return new ResponseEntity<>(userService.save(dto), HttpStatus.CREATED);
     }
 
