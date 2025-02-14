@@ -23,6 +23,16 @@ repositories {
     mavenCentral()
 }
 
+// 실행 가능한 JAR 생성 설정
+bootJar {
+    enabled = true
+}
+
+// 일반 JAR 파일 생성 비활성화
+jar {
+    enabled = false
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -47,7 +57,7 @@ dependencies {
     implementation 'at.favre.lib:bcrypt:0.10.2'
 
     // ElasticSearch
-    implementation 'org.springframework.data:spring-data-elasticsearch:4.2.2'
+//    implementation 'org.springframework.data:spring-data-elasticsearch:4.2.2'
 }
 
 tasks.named('test') {
