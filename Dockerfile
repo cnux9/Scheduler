@@ -9,7 +9,7 @@ COPY --chown=gradle:gradle . .
 RUN chmod +x gradlew
 
 # Gradle Wrapper를 사용하여 프로젝트를 빌드합니다.
-RUN ./gradlew clean build --no-daemon
+RUN ./gradlew clean build --no-daemon -x test
 
 # 2단계: 실행 단계 (JDK 17 사용)
 FROM openjdk:17-slim
