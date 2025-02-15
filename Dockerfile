@@ -1,5 +1,5 @@
-# 1단계: 빌드 단계
-FROM gradle:7.6.0-jdk11 AS builder
+# 1단계: 빌드 단계 (JDK 17 사용)
+FROM gradle:7.6.0-jdk17 AS builder
 WORKDIR /home/gradle/project
 
 # 소스 코드와 gradlew 파일, gradle 설정 파일들을 컨테이너로 복사합니다.
@@ -11,8 +11,8 @@ RUN chmod +x gradlew
 # Gradle Wrapper를 사용하여 프로젝트를 빌드합니다.
 RUN ./gradlew clean build --no-daemon
 
-# 2단계: 실행 단계
-FROM openjdk:11-jre-slim
+# 2단계: 실행 단계 (JDK 17 사용)
+FROM openjdk:17-jre-slim
 WORKDIR /app
 
 # 빌드 단계에서 생성된 jar 파일을 복사합니다.
