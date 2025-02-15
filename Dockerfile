@@ -12,7 +12,7 @@ RUN chmod +x gradlew
 RUN ./gradlew clean build --no-daemon
 
 # 2단계: 실행 단계 (JDK 17 사용)
-FROM openjdk:17-jre-slim
+FROM openjdk:17-slim
 WORKDIR /app
 
 # 빌드 단계에서 생성된 jar 파일을 복사합니다.
