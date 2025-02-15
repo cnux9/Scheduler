@@ -35,11 +35,17 @@ jobs:
         id: deploy-prod
   #  if: contains(github.ref, 'main')
         with:
-          host: ${{ secrets.HOST_PROD }} # EC2 퍼블릭 IPv4 DNS
+          host: ${{ secrets.HOST_PROD }}
           username: ubuntu
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
             sudo docker ps
+            if [ "$(docker ps -a -q -f name=scheduler-container)" ]; then
+              echo "기존 컨테이너 발견. 제거합니다..."
+              docker rm -f scheduler-container
+            else
+              echo "기존 컨테이너 없음."
+            fi
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/scheduler:latest
             docker run --name scheduler-container --restart no -p 8080:8080 -e SPRING_DATASOURCE_URL="jdbc:mysql://${{ secrets.RDS_ENDPOINT }}:3306/scheduler" -e SPRING_DATASOURCE_USERNAME=${{ secrets.RDS_USERNAME }} -e SPRING_DATASOURCE_PASSWORD=${{ secrets.RDS_PASSWORD }} ${{ secrets.DOCKER_USERNAME }}/scheduler:latest
             sudo docker image prune -f
