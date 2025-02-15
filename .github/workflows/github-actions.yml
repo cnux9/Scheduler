@@ -27,3 +27,20 @@ jobs:
           context: .
           push: true
           tags: cnux9/scheduler:latest
+
+
+# deploy
+      - name: Deploy to prod
+        uses: appleboy/ssh-action@master
+        id: deploy-prod
+  #  if: contains(github.ref, 'main')
+        with:
+          host: ${{ secrets.HOST_PROD }} # EC2 퍼블릭 IPv4 DNS
+          username: ubuntu
+          key: ${{ secrets.PRIVATE_KEY }}
+          envs: GITHUB_SHA
+          script: |
+            sudo docker ps
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/scheduler:latest
+            docker run --name scheduler-container --restart no -p 8080:8080 -e SPRING_DATASOURCE_URL="jdbc:mysql://${{ secrets.RDS_ENDPOINT }}:3306/scheduler" -e SPRING_DATASOURCE_USERNAME=${{ secrets.RDS_USERNAME }} -e SPRING_DATASOURCE_PASSWORD=${{ secrets.RDS_PASSWORD }} ${{ secrets.DOCKER_USERNAME }}/scheduler:latest
+            sudo docker image prune -f
