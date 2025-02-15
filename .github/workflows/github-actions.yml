@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    if: contains(github.ref, 'main')
+    if: contains(github.ref, 'action')
     runs-on: ubuntu-latest
 
     steps:
