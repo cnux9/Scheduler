@@ -7,8 +7,7 @@ jobs:
   Explore-GitGub-Actions:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+      - uses: actions/checkout@v4
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -18,14 +17,13 @@ jobs:
           ./gradlew build -x test
 
       - name: login to docker hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u cnux9 --password-stdin
       - name: build the image
         uses: docker/build-push-action@v6
         with:
+          context: .
           push: true
           tags: cnux9/scheduler:latest
-
-
 
       - name: Deploy to prod
         uses: appleboy/ssh-action@master
