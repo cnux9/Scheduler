@@ -6,11 +6,17 @@ on:
 
 jobs:
   build:
+    if: contains(github.ref, 'main')
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout source code
         uses: actions/checkout@v3
+
+      - name: Gradle build
+        run: |
+          chmod +x gradlew
+          ./gradlew clean build --no-daemon -x test
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -28,12 +34,10 @@ jobs:
           push: true
           tags: cnux9/scheduler:latest
 
-
 # deploy
       - name: Deploy to prod
         uses: appleboy/ssh-action@master
         id: deploy-prod
-  #  if: contains(github.ref, 'main')
         with:
           host: ${{ secrets.HOST_PROD }}
           username: ubuntu
@@ -47,5 +51,11 @@ jobs:
               echo "기존 컨테이너 없음."
             fi
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/scheduler:latest
-            docker run --name scheduler-container --restart no -p 8080:8080 -e SPRING_DATASOURCE_URL="jdbc:mysql://${{ secrets.RDS_ENDPOINT }}:3306/scheduler" -e SPRING_DATASOURCE_USERNAME=${{ secrets.RDS_USERNAME }} -e SPRING_DATASOURCE_PASSWORD=${{ secrets.RDS_PASSWORD }} ${{ secrets.DOCKER_USERNAME }}/scheduler:latest
+            docker run -d \
+            --name scheduler-container \
+            --restart no -p 8080:8080 \
+            -e SPRING_DATASOURCE_URL="jdbc:mysql://${{ secrets.RDS_ENDPOINT }}:3306/scheduler" \
+            -e SPRING_DATASOURCE_USERNAME=${{ secrets.RDS_USERNAME }} \
+            -e SPRING_DATASOURCE_PASSWORD=${{ secrets.RDS_PASSWORD }} \
+            ${{ secrets.DOCKER_USERNAME }}/scheduler:latest
             sudo docker image prune -f
