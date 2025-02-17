@@ -29,7 +29,7 @@ public class UserController {
     // 단건 생성
     @PostMapping
     public ResponseEntity<UserResponseDto> save(@Validated @RequestBody UserRequestDto dto) {
-        log.info("열네번째 버전");
+        log.info("뭔가 변경");
         return new ResponseEntity<>(userService.save(dto), HttpStatus.CREATED);
     }
 
